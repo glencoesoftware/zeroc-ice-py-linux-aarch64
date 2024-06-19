@@ -33,9 +33,9 @@ jobs:
           docker run --rm -v $PWD/zeroc-ice-3.6.5:/build builder /bin/bash -c "cd /build ; /opt/python/${{ matrix.version }}/bin/python setup.py bdist_wheel"
           docker run --rm -v $PWD/zeroc-ice-3.6.5:/build builder auditwheel repair --plat 'manylinux_2_28_aarch64' -w /build/dist /build/dist/zeroc_ice-3.6.5-${{ matrix.version }}-linux_aarch64.whl
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: artifacts-${{ matrix.version }}
           path: zeroc-ice-3.6.5/dist/*manylinux*.whl
           if-no-files-found: error
   release:
@@ -44,11 +44,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts from build
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: List artifacts
         run: ls -R
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/*.whl
+            artifacts*/*.whl
